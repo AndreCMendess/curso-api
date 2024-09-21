@@ -50,4 +50,11 @@ public class UserResource {
 
     }
 
+    @PutMapping(value="/{id}")
+    public ResponseEntity<UserDTO> update(@PathVariable Integer id,@RequestBody UserDTO obj){
+        obj.setId(id);
+        return ResponseEntity.ok().body(modelMapper.map(userService.update(obj),UserDTO.class));
+    }
+
+
 }
