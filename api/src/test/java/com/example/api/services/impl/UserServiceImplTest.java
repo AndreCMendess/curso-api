@@ -13,6 +13,7 @@ import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,6 +29,7 @@ class UserServiceImplTest {
     public static final String NAME = "Andre C";
     public static final String EMAIL = "andre@gmail.com";
     public static final String PASSWORD = "123";
+    public static final int INDEX = 0;
     @InjectMocks
     private UserServiceImpl service;
     @Mock
@@ -92,7 +94,31 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findAll() {
+    void whenfindAllThenReturnListUsers() {
+        //Simula o comportamento do repositorio para que , que o metodo findAll for chamado retorne uma lista de usuario
+        when(repository.findAll()).thenReturn(List.of(user));
+
+        //Chama o metodo  findAll e armazena a resposta em uma lista de user
+        List<User> response = service.findAll();
+
+        // Verifica se a resposta da lista nao é nula
+        assertNotNull(response);
+
+        // Verifica se o numero de usuarios retornados da lista é igual ao esperado
+        assertEquals(1,response.size());
+
+        // Verifica se o tipo da resposta retornada é um user
+        assertEquals(User.class,response.get(0).getClass());
+
+        // Verifica se o id do primeiro objeto na lista é o esperado
+        assertEquals(ID,response.get(INDEX).getId());
+        // Verifica se o nome do primeiro objeto na lista é o esperado
+        assertEquals(NAME,response.get(INDEX).getName());
+        // Verifica se o email do primeiro objeto na lista é o esperado
+        assertEquals(EMAIL,response.get(INDEX).getEmail());
+        // Verifica se o password do primeiro objeto na lista é o esperado
+        assertEquals(PASSWORD,response.get(INDEX).getPassword());
+
     }
 
     @Test
