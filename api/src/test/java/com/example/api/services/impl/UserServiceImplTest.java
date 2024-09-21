@@ -3,6 +3,8 @@ package com.example.api.services.impl;
 import com.example.api.domain.User;
 import com.example.api.domain.dto.UserDTO;
 import com.example.api.repositories.UserRepository;
+import com.example.api.services.impl.exception.ObjectNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+@Slf4j
 @SpringBootTest
 class UserServiceImplTest {
 
@@ -66,7 +69,25 @@ class UserServiceImplTest {
         //Verifica se o response.email é == EMAIL de parametro
         assertEquals(response.getEmail(),EMAIL);
 
+    }
 
+    @Test
+    void whenFindByIdThenReturnAnObectNotFoundException(){
+
+        // Simula o comportamento do repositório para que, quando o metodo findById for chamado com qualquer argumento, ele lance uma ObjectNotFoundException com a mensagem "Objeto não encontrado"
+        when(repository.findById(any())).thenThrow(new ObjectNotFoundException("Objeto não encontrado"));
+
+
+        try{
+            // Chama o metodo service.findById e espera que ele lance uma exceção do tipo ObjectNotFoundException
+                service.findById(ID);
+        }catch(Exception ex){
+            // Verifica se o tipo da exceção capturada é ObjectNotFoundException
+            assertEquals(ObjectNotFoundException.class,ex.getClass());
+
+            // Verifica se a mensagem da exceção é "Objeto não encontrado"
+            assertEquals("Objeto não encontrado",ex.getMessage());
+        }
 
     }
 
