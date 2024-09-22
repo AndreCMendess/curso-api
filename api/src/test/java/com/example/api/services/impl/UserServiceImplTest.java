@@ -32,6 +32,7 @@ class UserServiceImplTest {
     public static final String PASSWORD = "123";
     public static final int INDEX = 0;
     public static final String EMAIL_JA_CADASTRO_NO_SISTEMA = "E-mail já cadastrado no sistema";
+    public static final String OBJETO_NAO_ENCONTRADO = "Objeto não encontrado";
     @InjectMocks
     private UserServiceImpl service;
     @Mock
@@ -79,7 +80,7 @@ class UserServiceImplTest {
     void whenFindByIdThenReturnAnObectNotFoundException(){
 
         // Simula o comportamento do repositório para que, quando o metodo findById for chamado com qualquer argumento, ele lance uma ObjectNotFoundException com a mensagem "Objeto não encontrado"
-        when(repository.findById(any())).thenThrow(new ObjectNotFoundException("Objeto não encontrado"));
+        when(repository.findById(any())).thenThrow(new ObjectNotFoundException(OBJETO_NAO_ENCONTRADO));
 
 
         try{
@@ -90,7 +91,7 @@ class UserServiceImplTest {
             assertEquals(ObjectNotFoundException.class,ex.getClass());
 
             // Verifica se a mensagem da exceção é "Objeto não encontrado"
-            assertEquals("Objeto não encontrado",ex.getMessage());
+            assertEquals(OBJETO_NAO_ENCONTRADO,ex.getMessage());
         }
 
     }
@@ -217,7 +218,8 @@ class UserServiceImplTest {
 
     @Test
     void deleteWithSucess() {
-        // Simula  o repositorio utilizando uma metodo findById qualquer metodo inteiro e retorna um optionalUser
+        // Simula  o repositorio utilizando um metodo findById com qualquer parametro inteiro e
+        // retorna um optionalUser
         when(repository.findById(anyInt())).thenReturn(optionalUser);
         // Nao faça nada enquanto o repositorio utilizar o metodo deletarById com qualquer numero inteiro
         doNothing().when(repository).deleteById(anyInt());
@@ -227,7 +229,21 @@ class UserServiceImplTest {
         verify(repository,times(1)).deleteById(anyInt());
     }
 
-
+    @Test
+    void deleteWithObjectNotFoundException(){
+        // Simula o repotorio utilizando o metodo findById com qualquer pararametro inteiro e
+        // retorna a exeção ObjectNotFoundException com a mensagem Objeto não encontrado
+        when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException(OBJETO_NAO_ENCONTRADO));
+        try{
+            // Chama o metodo service delete utilizando o ID como parametro
+            service.delete(ID);
+        } catch(Exception ex){
+            // Verifica se a exceção chamada é ObjectNotFoundException
+            assertEquals(ObjectNotFoundException.class,ex.getClass());
+            // Verifica se a mensagem esperada é Objeto não encontrado
+            assertEquals(OBJETO_NAO_ENCONTRADO,ex.getMessage());
+        }
+    }
 
     @Test
     void findByEmail() {
