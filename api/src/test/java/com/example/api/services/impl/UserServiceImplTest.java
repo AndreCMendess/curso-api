@@ -217,11 +217,17 @@ class UserServiceImplTest {
 
     @Test
     void deleteWithSucess() {
+        // Simula  o repositorio utilizando uma metodo findById qualquer metodo inteiro e retorna um optionalUser
         when(repository.findById(anyInt())).thenReturn(optionalUser);
+        // Nao faça nada enquanto o repositorio utilizar o metodo deletarById com qualquer numero inteiro
         doNothing().when(repository).deleteById(anyInt());
+        // Chama o metodo service delete utilizando o ID como parametro
         service.delete(ID);
+        // Verifica se no repositorio , o metodo deleteById esta sendo chamado apenas uma vez
         verify(repository,times(1)).deleteById(anyInt());
     }
+
+
 
     @Test
     void findByEmail() {
