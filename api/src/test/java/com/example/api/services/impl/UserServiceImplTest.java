@@ -32,6 +32,7 @@ class UserServiceImplTest {
     public static final String EMAIL = "andre@gmail.com";
     public static final String PASSWORD = "123";
     public static final int INDEX = 0;
+    public static final String EMAIL_JA_CADASTRO_NO_SISTEMA = "E-mail já cadastrado no sistema";
     @InjectMocks
     private UserServiceImpl service;
     @Mock
@@ -126,12 +127,14 @@ class UserServiceImplTest {
     @Test
     void whenCreateThenReturnSucess() {
 
-        // Simula o comportamento do repositorio para que, quando o metodo save for chamado com qualquer objeto, ele retorne um user
+        // Simula o comportamento do repositorio para que,
+        // quando o metodo save for chamado com qualquer objeto, ele retorne um User
         when(repository.save(any())).thenReturn(user);
-        // Chama o metodo service create passando um userDTO e armazena o resultado em um objeto do tipo user
+        // Chama o metodo service create passando um userDTO e
+        // armazena o resultado em um objeto do tipo user
         User response = service.create(userDTO);
 
-        // Verifica se a resposta nao é nula, ou seja, o objeto user foi criado ocm sucesso
+        // Verifica se a resposta nao é nula, ou seja, o objeto user foi criado com sucesso
         assertNotNull(response);
         // Verifica se o tipo da resposta é user
         assertEquals(User.class,response.getClass());
@@ -149,7 +152,8 @@ class UserServiceImplTest {
 
     @Test
     void whenCreateReturnDataIntegrityViolationException(){
-        // Simula o comportamento do repositorio para que, quando o metodo findByEmail for hcamado com qualquer string de email , ele retorna um optionalUser contendo um usuario
+        // Simula o comportamento do repositorio para que, quando o metodo findByEmail
+        // for chamado com qualquer string de email , ele retorna um optionalUser
         when(repository.findByEmail(anyString())).thenReturn(optionalUser);
 
         try{
@@ -162,13 +166,14 @@ class UserServiceImplTest {
             // Verifica se a exceção lançada é do tipo dataIntegratyViolationException
             assertEquals(DataIntegratyViolationException.class,ex.getClass());
             // Verifica se a mensagem exceção é "Email ja cadastrado no sistema"
-            assertEquals("E-mail já cadastrado no sistema",ex.getMessage());
+            assertEquals(EMAIL_JA_CADASTRO_NO_SISTEMA,ex.getMessage());
         }
     }
 
     @Test
     void WhenUpdateThenReturnSucess() {
-        // Simula o comportamento do repositorio para que , quando o metodo save for chamado com qualquer objeto , ele retorna um user
+        // Simula o comportamento do repositorio para que ,
+        // quando o metodo save for chamado com qualquer objeto , ele retorna um user
     when(repository.save(any())).thenReturn(user);
     // Chama o metodo service update passando um userDTO de parametro e retorna um user
     User response = service.update(userDTO);
@@ -185,6 +190,29 @@ class UserServiceImplTest {
         assertEquals(EMAIL,response.getEmail());
         // Verifica se o password do objeto criado é o esperado
         assertEquals(PASSWORD,response.getPassword());
+
+    }
+
+    @Test
+    void WhenUpdateThenReturnDataIntegrityViolationExceptoin() {
+        // Simula o comportamento do repositorio para que ,
+        // quando o metodo findbYEMAILamado com qualquer objeto , ele retorna um optionalUser
+        when(repository.findByEmail(anyString())).thenReturn(optionalUser);
+
+        try{
+
+            optionalUser.get().setId(2);
+            // Chama o metodo service update passando um userDTO de parametro
+            service.update(userDTO);
+        }catch(Exception ex){
+            // Verifica se a exceção lançada é do tipo dataIntegratyViolationException
+            assertEquals(DataIntegratyViolationException.class,ex.getClass());
+            // Verifica se a mensagem exceção é "Email ja cadastrado no sistema"
+            assertEquals(EMAIL_JA_CADASTRO_NO_SISTEMA,ex.getMessage());
+        }
+
+
+
 
     }
 
