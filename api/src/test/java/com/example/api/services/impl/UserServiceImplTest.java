@@ -3,6 +3,7 @@ package com.example.api.services.impl;
 import com.example.api.domain.User;
 import com.example.api.domain.dto.UserDTO;
 import com.example.api.repositories.UserRepository;
+import com.example.api.services.impl.exception.DataIntegratyViolationException;
 import com.example.api.services.impl.exception.ObjectNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +20,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @Slf4j
@@ -143,6 +145,25 @@ class UserServiceImplTest {
         assertEquals(PASSWORD,response.getPassword());
 
 
+    }
+
+    @Test
+    void whenCreateReturnDataIntegrityViolationException(){
+        // Simula o comportamento do repositorio para que, quando o metodo findByEmail for hcamado com qualquer string de email , ele retorna um optionalUser contendo um usuario
+        when(repository.findByEmail(anyString())).thenReturn(optionalUser);
+
+        try{
+            // Altera o ID do usuário retornado para 2, simulando um cenário onde o ID do usuário encontrado
+            // é diferente do ID do objeto que está sendo criado ou atualizado, o que causaria um conflito de email já cadastrado.
+            optionalUser.get().setId(2);
+            // Chama o service  o service para criar o usuario usando o userDTO , oque deve lançar uma exceçao devido ao email ja cadastrado
+            service.findByEmail(userDTO);
+        }catch (Exception ex){
+            // Verifica se a exceção lançada é do tipo dataIntegratyViolationException
+            assertEquals(DataIntegratyViolationException.class,ex.getClass());
+            // Verifica se a mensagem exceção é "Email ja cadastrado no sistema"
+            assertEquals("E-mail já cadastrado no sistema",ex.getMessage());
+        }
     }
 
     @Test
