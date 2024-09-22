@@ -167,7 +167,25 @@ class UserServiceImplTest {
     }
 
     @Test
-    void update() {
+    void WhenUpdateThenReturnSucess() {
+        // Simula o comportamento do repositorio para que , quando o metodo save for chamado com qualquer objeto , ele retorna um user
+    when(repository.save(any())).thenReturn(user);
+    // Chama o metodo service update passando um userDTO de parametro e retorna um user
+    User response = service.update(userDTO);
+
+        // Verifica se a resposta nao é nula, ou seja, o objeto user foi criado ocm sucesso
+        assertNotNull(response);
+        // Verifica se o tipo da resposta é user
+        assertEquals(User.class,response.getClass());
+        // Verifica se o id do objeto criado é o esperado
+        assertEquals(ID,response.getId());
+        // Verifica se o nome do objeto criado é o esperado
+        assertEquals(NAME,response.getName());
+        // Verifica se o email do objeto criado é o esperado
+        assertEquals(EMAIL,response.getEmail());
+        // Verifica se o password do objeto criado é o esperado
+        assertEquals(PASSWORD,response.getPassword());
+
     }
 
     @Test
