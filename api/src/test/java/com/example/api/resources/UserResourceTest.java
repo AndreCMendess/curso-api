@@ -125,7 +125,22 @@ class UserResourceTest {
     }
 
     @Test
-    void create() {
+    void whenCreateThenReturnCreated() {
+
+        // Simula um retorna de usuario utilizando o metodo create do service
+        when(service.create(any())).thenReturn(user);
+
+        // Cria uma instancia de um ResponseEntity<UserDto> utilizando o metodo create do resource
+        ResponseEntity<UserDTO> response = resource.create(userDTO);
+
+        // Verifica se a clase esperada pelo responde é do tipo ResponseEntity
+        assertEquals(ResponseEntity.class,response.getClass());
+
+        // Verifica se o status da resposta é 201 CREATED(usuario foi criado com sucesso)
+        assertEquals(HttpStatus.CREATED,response.getStatusCode());
+        // Verifica se o cabeçalho da resposta contem a chave "Localtion"(localização do novo recurso)
+        assertNotNull(response.getHeaders().get("Location"));
+
     }
 
     @Test
