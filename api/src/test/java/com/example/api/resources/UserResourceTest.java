@@ -144,7 +144,33 @@ class UserResourceTest {
     }
 
     @Test
-    void update() {
+    void whenUpdateThenReturnSucess() {
+
+        // Simula a atualização de um usuario no service,retornado o objeto user atualizado
+        when(service.update(userDTO)).thenReturn(user);
+        // Simula o mapeamento de um objeto e o retornado como um UserDTO
+        when(mapper.map(any(),any())).thenReturn(userDTO);
+
+        // Instancia um objeto do tipo ResponseEntity<UserDTO> , atualiza um usuario registrado passando  o id e um userDTO como parametro
+        ResponseEntity<UserDTO> response = resource.update(ID,userDTO);
+
+        // Verifica se a resposta não é nula
+        assertNotNull(response);
+        // Verifica se o corpo da resposta (dados do usuário) não é nulo
+        assertNotNull(response.getBody());
+        // Verifica se o status da resposta é ok (200) (indicando sucesso na atualizaçao do usuario)
+        assertEquals(HttpStatus.OK,response.getStatusCode());
+        // Verifica se o tipo da resposta é ResponseEntity
+        assertEquals(ResponseEntity.class,response.getClass());
+        // Verifica se o tipo do corpo da resposta é UserDTO
+        assertEquals(UserDTO.class,response.getBody().getClass());
+        // Verifica se o ID retornado no UserDTO é o mesmo esperado
+        assertEquals(ID,response.getBody().getId());
+        // Verifica se o nome retornado no UserDTO é o esperado
+        assertEquals(NAME,response.getBody().getName());
+        // Verifica se o e-mail retornado no UserDTO é o esperado
+        assertEquals(EMAIL,response.getBody().getEmail());
+
     }
 
     @Test
