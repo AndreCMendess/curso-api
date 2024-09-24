@@ -176,12 +176,17 @@ class UserResourceTest {
     @Test
     void whenDeleteThenReturnSucess () {
 
+        // Simula que o metodo nao delete nao faça nada quando chamado com qualquer valor inteiro
         doNothing().when(service).delete(anyInt());
 
+        // Cria uma instancia do tipo ResponseEntity<UserDto> chamando  o metodo delete com id de parametro
         ResponseEntity<UserDTO> response = resource.delete(ID);
 
+        // Verifica se o response nao é nulo
         assertNotNull(response);
+        // Verifica se a clase esperada é ResponseEntity
         assertEquals(ResponseEntity.class,response.getClass());
+        // Verifica se o metodo delete é chamado apenas uma vez
         verify(service,times(1)).delete(anyInt());
 
 
